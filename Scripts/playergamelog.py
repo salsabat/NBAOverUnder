@@ -45,6 +45,7 @@ class PlayerGameLog(Endpoint):
     team_stats = None
     headers = None
 
+    # added manual season parameter input
     def __init__(
         self,
         player_id,

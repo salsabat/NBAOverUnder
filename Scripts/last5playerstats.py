@@ -35,6 +35,7 @@ class LeagueDashPlayerStats(Endpoint):
     team_stats = None
     headers = None
 
+    # now retrieves the last 5 games per game stats
     def __init__(
         self,
         last_n_games="5",
@@ -142,4 +143,3 @@ class LeagueDashPlayerStats(Endpoint):
         self.league_dash_player_stats = Endpoint.DataSet(
             data=data_sets["LeagueDashPlayerStats"]
         )
-        

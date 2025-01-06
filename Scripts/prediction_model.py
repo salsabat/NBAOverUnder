@@ -8,15 +8,16 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 import sys
 
+last_n_games = '10'
 keep_headers = {'MIN', 'FGM', 'FGA', 'FG3M', 'FG3A', 'FTM', 'FTA', 'OREB', 
                 'DREB', 'REB', 'AST', 'TOV', 'STL', 'BLK', 'PTS', 'PLUS_MINUS'}
-max_seasons_of_data = 4
+max_seasons_of_data = 3
 
 
 def get_player_recent_stats(player_name):
     last_five_games_stats = LeagueDashPlayerStats(
         season=Season.default,
-        last_n_games='5',
+        last_n_games=last_n_games,
         per_mode_detailed='PerGame'
     )
     input_data = last_five_games_stats.get_dict()
@@ -82,9 +83,9 @@ def test_model(model, X_test_scaled, y_test, X_train_scaled, y_train):
 
 if __name__ == '__main__':
 
-    player_name = 'Kevin Durant'
-    target_stat = 'PTS'
-    money_line = 25.5
+    player_name = sys.argv[1] + ' ' + sys.argv[2]
+    target_stat = sys.argv[3]
+    money_line = float(sys.argv[4])
 
     input_df, player_id = get_player_recent_stats(player_name)
     training_df = get_player_game_log(player_id)

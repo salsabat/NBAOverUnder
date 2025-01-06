@@ -66,6 +66,11 @@ def train_model(training_df, target_stat, money_line):
     for i in range(len(y)):
         y[i] = 1 if y[i] > money_line else 0
     
+    if sum(y) == 0:
+        return -4
+    elif sum(y) == len(y):
+        return -5
+    
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
     scaler = StandardScaler()
@@ -119,7 +124,11 @@ def main():
     input_df, player_id = get_player_recent_stats(player_name)
     training_df = get_player_game_log(player_id)
 
-    model, X_test_scaled, y_test, X_train_scaled, y_train, scaler = train_model(training_df, target_stat, money_line)
+    model_result = train_model(training_df, target_stat, money_line)
+    if model_result == -4 or model_result == -5:
+        return model_result
+
+    model, X_test_scaled, y_test, X_train_scaled, y_train, scaler = model_result
     
     X_input = input_df.drop(columns=target_stat)
     X_input_scaled = scaler.transform(X_input)

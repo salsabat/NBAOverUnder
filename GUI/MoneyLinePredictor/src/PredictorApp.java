@@ -129,6 +129,14 @@ public class PredictorApp implements ActionListener {
                             "Invalid Input(s)", JOptionPane.ERROR_MESSAGE);
                     predictionResult.setText("Result: N/A");
                 }
+                case "-4" -> {
+                    predictionResult.setText(
+                            "You should probably take the under. It is practically guaranteed.");
+                }
+                case "-5" -> {
+                    predictionResult.setText(
+                            "You should probably take the over. It is practically guaranteed.");
+                }
                 default -> predictionResult.setText(result);
             }
         } catch (IOException e1) {

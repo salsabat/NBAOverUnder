@@ -3,6 +3,7 @@ import numpy as np
 from nba_api.stats.library.parameters import Season
 from nba_api.stats.endpoints import LeagueDashPlayerStats
 from nba_api.stats.endpoints import PlayerGameLog
+from nba_api.stats.static.players import get_active_players
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
@@ -81,11 +82,39 @@ def test_model(model, X_test_scaled, y_test, X_train_scaled, y_train):
     print(model.score(X_test_scaled, y_test))
 
 
-if __name__ == '__main__':
+def verify_inputs(player_name, target_stat, money_line):
+    players_list = get_active_players()
+    found = False
+    for player in players_list:
+        if player['full_name'] == player_name:
+            found = True
+            break
+    if not found:
+        return -1
+    
+    if target_stat not in keep_headers:
+        return -2
+    
+    try:
+        if money_line[len(money_line) - 2:] != '.5':
+            return -3
+        money_line = float(money_line)
+    except:
+        return -3
+    
+    return 0
+
+
+def main():
 
     player_name = sys.argv[1] + ' ' + sys.argv[2]
     target_stat = sys.argv[3]
-    money_line = float(sys.argv[4])
+    money_line = sys.argv[4]
+
+    valid = verify_inputs(player_name, target_stat, money_line)
+    if valid != 0:
+        return valid
+    money_line = float(money_line)
 
     input_df, player_id = get_player_recent_stats(player_name)
     training_df = get_player_game_log(player_id)
@@ -99,4 +128,6 @@ if __name__ == '__main__':
     prediction_prob = model.predict_proba(X_input_scaled)
 
     result = f'You should probably take the {'over' if prediction[0] == 1 else 'under'}: {prediction_prob[0][prediction[0]] * 100}%'
-    print(result)
+    return result
+
+print(main())

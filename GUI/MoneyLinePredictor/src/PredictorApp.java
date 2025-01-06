@@ -113,8 +113,24 @@ public class PredictorApp implements ActionListener {
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(process.getInputStream()));
             String result = reader.readLine();
-            predictionResult.setText(result);
-
+            switch (result) {
+                case "-1" -> {
+                    JOptionPane.showMessageDialog(frame, "That player is not in the NBA.",
+                            "Invalid Input(s)", JOptionPane.ERROR_MESSAGE);
+                    predictionResult.setText("Result: N/A");
+                }
+                case "-2" -> {
+                    JOptionPane.showMessageDialog(frame, "That is not a valid statistic.",
+                            "Invalid Input(s)", JOptionPane.ERROR_MESSAGE);
+                    predictionResult.setText("Result: N/A");
+                }
+                case "-3" -> {
+                    JOptionPane.showMessageDialog(frame, "That is not a valid money line.",
+                            "Invalid Input(s)", JOptionPane.ERROR_MESSAGE);
+                    predictionResult.setText("Result: N/A");
+                }
+                default -> predictionResult.setText(result);
+            }
         } catch (IOException e1) {
             throw new RuntimeException(e1);
         }

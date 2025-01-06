@@ -5,12 +5,13 @@ from nba_api.stats.endpoints import LeagueDashPlayerStats
 from nba_api.stats.endpoints import PlayerGameLog
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LogisticRegression
 import sys
 
 keep_headers = {'MIN', 'FGM', 'FGA', 'FG3M', 'FG3A', 'FTM', 'FTA', 'OREB', 
                 'DREB', 'REB', 'AST', 'TOV', 'STL', 'BLK', 'PTS', 'PLUS_MINUS'}
 max_seasons_of_data = 4
+
 
 def get_player_recent_stats(player_name):
     last_five_games_stats = LeagueDashPlayerStats(
@@ -32,6 +33,7 @@ def get_player_recent_stats(player_name):
     input_df = input_df[list(keep_headers)]
 
     return (input_df, player_id)
+
 
 def get_player_game_log(player_id):
     def update_training_data(df, season_stats):
@@ -56,8 +58,44 @@ def get_player_game_log(player_id):
     return training_df
 
 
+def train_model(training_df, target_stat, money_line):
+    X = training_df.drop(columns=target_stat)
+    y = training_df[target_stat]
+    for i in range(len(y)):
+        y[i] = 1 if y[i] > money_line else 0
+    
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
+
+    model = LogisticRegression(random_state=0, C=0.7, fit_intercept=True).fit(X_train_scaled, y_train)
+    
+    return (model, X_test_scaled, y_test, X_train_scaled, y_train, scaler)
+
+
+def test_model(model, X_test_scaled, y_test, X_train_scaled, y_train):
+    print(model.score(X_train_scaled, y_train))
+    print(model.score(X_test_scaled, y_test))
+
+
 if __name__ == '__main__':
-    input_df, player_id = get_player_recent_stats('Kevin Durant')
+
+    player_name = 'Kevin Durant'
+    target_stat = 'PTS'
+    money_line = 25.5
+
+    input_df, player_id = get_player_recent_stats(player_name)
     training_df = get_player_game_log(player_id)
-    print(input_df)
-    print(training_df)
+
+    model, X_test_scaled, y_test, X_train_scaled, y_train, scaler = train_model(training_df, target_stat, money_line)
+    
+    X_input = input_df.drop(columns=target_stat)
+    X_input_scaled = scaler.transform(X_input)
+
+    prediction = model.predict(X_input_scaled)
+    prediction_prob = model.predict_proba(X_input_scaled)
+
+    result = f'You should probably take the {'over' if prediction[0] == 1 else 'under'}: {prediction_prob[0][prediction[0]] * 100}%'
+    print(result)

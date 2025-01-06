@@ -1,11 +1,16 @@
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import javax.swing.*;
 
 /**
  * A graphical application to run the prediction model.
  */
-public class PredictorApp {
+public class PredictorApp implements ActionListener {
 
     /**
      * Our application window. Disposed when application exits.
@@ -57,7 +62,7 @@ public class PredictorApp {
 
         tempPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         predict = new JButton("Predict");
-        predict.addActionListener(e -> {});
+        predict.addActionListener(this);
         tempPanel.add(predict);
         panel.add(tempPanel);
 
@@ -77,6 +82,42 @@ public class PredictorApp {
     public void start() {
         frame.pack();
         frame.setVisible(true);
+    }
+
+    /**
+     * Invoked when the predict button is clicked. Checks if the inputs are valid and runs the
+     * prediction model.
+     *
+     * @param e the event to be processed
+     */
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String[] player = playerName.getText().trim().split(" ");
+        String targetStat = stat.getText().trim().toUpperCase();
+        String line = moneyLine.getText().trim();
+
+        try {
+            String[] command = {
+                    "../../Scripts/venv/bin/python",
+                    "../../Scripts/prediction_model.py",
+                    player[0],
+                    player[1],
+                    targetStat,
+                    line
+            };
+
+            ProcessBuilder pb = new ProcessBuilder(command);
+            pb.redirectErrorStream(true);
+            Process process = pb.start();
+
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()));
+            String result = reader.readLine();
+            predictionResult.setText(result);
+
+        } catch (IOException e1) {
+            throw new RuntimeException(e1);
+        }
     }
 
     /**

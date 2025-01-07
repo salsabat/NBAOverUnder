@@ -29,13 +29,31 @@ and anyone interested in analyzing NBA games.
 4. **Money Line**: The betting line (e.g., 25.5).
 
 ### **Through GUI**
-1. Run the Java GUI application by executing the following command from the root project:
-   - For Linux/macOS: `java -jar GUI/MoneyLinePredictor.jar`
-   - For Windows: `java -jar GUI\MoneyLinePredictor.jar`
-1. In the name box, enter the first name, a space, and the last name.
-2. In the target stat box, enter the statistic.
-3. In the money line box, enter the line.
-4. Click the predict button.
+2. **Compile the Java file** in the `GUI/MoneyLinePredictor/src` folder. From the root project directory, run:
+
+   - **For Linux/macOS/Windows**:
+     ```bash
+     javac GUI/MoneyLinePredictor/src/PredictorApp.java
+     ```
+   - **For Windows**:
+     ```bash
+     javac GUI\MoneyLinePredictor\src\PredictorApp.java
+     ```
+
+3. **Run the Java GUI application** by executing the following command from the root project directory:
+   - **For Linux/macOS**:
+     ```bash
+     java -cp GUI/MoneyLinePredictor/src PredictorApp
+     ```
+   - **For Windows**:
+     ```bash
+     java -cp GUI\MoneyLinePredictor\src PredictorApp
+     ```
+
+4. In the **name box**: enter the first name and last name of the player.
+5. In the **target stat box**: enter the desired statistic.
+6. In the **money line box**: enter the betting line.
+7. Click the **predict button** to see the prediction.
 
 ### **Through Command Line**
 
@@ -47,7 +65,7 @@ Here’s an example of running the model from the command line: `python3 Scripts
 If you encounter any issues, here are a few things to check:
 1. Ensure that you've activated the virtual environment and installed the dependencies using `pip install -r requirements.txt`
 2. Ensure you're using Python 3.x. Verify the version by running `python --version`
-3. Make sure you have Java 21.x+ installed for the GUI. If there are issues running the `.jar` file, try reinstalling Java.
+3. Make sure you have Java 21.x+ installed for the GUI. If there are issues compiling and running the `.java` file, try reinstalling Java.
 
 ## Acknowledgments
 

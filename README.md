@@ -29,7 +29,7 @@ and anyone interested in analyzing NBA games.
 4. **Money Line**: The betting line (e.g., 25.5).
 
 ### **Through GUI**
-2. **Compile the Java file** in the `GUI/MoneyLinePredictor/src` folder. From the root project directory, run:
+1. **Compile the Java file** in the `GUI/MoneyLinePredictor/src` folder. From the root project directory, run:
 
    - **For Linux/macOS/Windows**:
      ```bash

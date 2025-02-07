@@ -29,7 +29,18 @@ and anyone interested in analyzing NBA games.
 4. **Money Line**: The betting line (e.g., 25.5).
 
 ### **Through GUI**
-1. **Compile the Java file** in the `GUI/MoneyLinePredictor/src` folder. From the root project directory, run:
+1. **Start the server** in the `backend` folder. From the root project directory, run:
+
+   - **For Linux/macOS/Windows**:
+     ```bash
+     fastapi dev backend/main.py
+     ```
+   - **For Windows**:
+     ```bash
+     fastapi dev backend\main.py
+     ```
+     
+2. **Compile the Java file** in the `GUI/MoneyLinePredictor/src` folder. From the root project directory, run:
 
    - **For Linux/macOS/Windows**:
      ```bash
@@ -41,6 +52,7 @@ and anyone interested in analyzing NBA games.
      ```
 
 3. **Run the Java GUI application** by executing the following command from the root project directory:
+   
    - **For Linux/macOS**:
      ```bash
      java -cp GUI/MoneyLinePredictor/src PredictorApp
@@ -50,16 +62,11 @@ and anyone interested in analyzing NBA games.
      java -cp GUI\MoneyLinePredictor\src PredictorApp
      ```
 
-4. In the **name box**: enter the first name and last name of the player.
-5. In the **target stat box**: enter the desired statistic.
-6. In the **money line box**: enter the betting line.
-7. Click the **predict button** to see the prediction.
-
-### **Through Command Line**
-
-Once the environment is set up and dependencies are installed, you can run the model using the `prediction_model.py` script. The script takes in **four parameters** to predict the over/under betting line for a given player's next game.
-
-Here’s an example of running the model from the command line: `python3 Scripts/prediction_model.py LeBron James points 25.5`
+5. In the **name box**: enter the first name and last name of the player.
+6. In the **target stat box**: enter the desired statistic.
+7. In the **money line box**: enter the betting line.
+8. Click the **predict button** to see the prediction.
+   
 
 ## Troubleshooting
 If you encounter any issues, here are a few things to check:

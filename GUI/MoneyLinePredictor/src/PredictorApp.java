@@ -3,9 +3,15 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import javax.swing.*;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 /**
  * A graphical application to run the prediction model.
@@ -27,8 +33,10 @@ public class PredictorApp implements ActionListener {
     private JLabel predictionResult;
 
     /**
-     * Construct a new application instance. Initializes GUI components, so must be invoked on the
-     * Swing Event Dispatch Thread. Does not show the application window (call `start()` to do
+     * Construct a new application instance. Initializes GUI components, so must be
+     * invoked on the
+     * Swing Event Dispatch Thread. Does not show the application window (call
+     * `start()` to do
      * that).
      */
     public PredictorApp() {
@@ -85,34 +93,16 @@ public class PredictorApp implements ActionListener {
     }
 
     /**
-     * Invoked when the predict button is clicked. Checks if the inputs are valid and runs the
-     * prediction model.
+     * Invoked when the predict button is clicked. Checks if the inputs are valid
+     * and runs the prediction model.
      *
      * @param e the event to be processed
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        String[] player = playerName.getText().trim().split(" ");
-        String targetStat = stat.getText().trim().toUpperCase();
-        String line = moneyLine.getText().trim();
-
         try {
-            String[] command = {
-                    "../../Scripts/venv/bin/python",
-                    "../../Scripts/prediction_model.py",
-                    player[0],
-                    player[1],
-                    targetStat,
-                    line
-            };
-
-            ProcessBuilder pb = new ProcessBuilder(command);
-            pb.redirectErrorStream(true);
-            Process process = pb.start();
-
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream()));
-            String result = reader.readLine();
+            String predictionJSON = getPrediction();
+            String result = predictionJSON.substring(15, predictionJSON.length() - 2);
             switch (result) {
                 case "-1" -> {
                     JOptionPane.showMessageDialog(frame, "That player is not in the NBA.",
@@ -139,9 +129,49 @@ public class PredictorApp implements ActionListener {
                 }
                 default -> predictionResult.setText(result);
             }
-        } catch (IOException e1) {
-            throw new RuntimeException(e1);
+        } catch (Exception e1) {
+            System.out.println(e1);
         }
+
+    }
+
+    /**
+     * Gets the prediction of the model ran on the user inputs.
+     * 
+     * @param fname The first name of the player
+     * @param lname The last name of the player
+     * @param stat  The target statistic
+     * @param line  The number to get the prediction for
+     * @return The prediction result of the model
+     * 
+     */
+    private String getPrediction() {
+        String body = String.format("{\"name\": \"%s\", \"stat\": \"%s\", \"line\": \"%s\"}",
+                playerName.getText().trim().toUpperCase(), stat.getText().trim().toUpperCase(),
+                moneyLine.getText().trim());
+        URI uri;
+        URL url;
+        String result;
+        try {
+            uri = new URI("http://127.0.0.1:8000/prediction");
+            url = uri.toURL();
+
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+            conn.setRequestProperty("Content-Type", "application/json");
+
+            try (DataOutputStream dos = new DataOutputStream(conn.getOutputStream())) {
+                dos.writeBytes(body);
+            }
+
+            try (BufferedReader bf = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+                result = bf.readLine();
+            }
+        } catch (Exception e) {
+            result = e.getMessage();
+        }
+        return result;
     }
 
     /**
